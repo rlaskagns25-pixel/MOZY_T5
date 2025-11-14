@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/yoonseohee/Desktop/웹프로그래밍/T5_VSCODE",
+      "program": "/Users/yoonseohee/Desktop/웹프로그래밍/T5_VSCODE/build/Debug/outDebug"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{% extends "moozy/base.html" %}
+{% load static %}
+{% block content %}
+<div class="phone">
+  <div class="status-bar">
+    <div class="status-left">12:34</div>
+    <div class="status-right">
+      <div class="icon-signal"></div>
+      <div class="icon-wifi"></div>
+      <div class="icon-battery"></div>
+    </div>
+  </div>
+
+  <div class="top">
+    <h2>날짜 선택</h2>
+  </div>
+
+  <div class="calendar-container">
+    <div id="calendar"></div>
+  </div>
+
+  <div id="selected-info">
+    <p id="selected-date"></p>
+    <label>날씨: <input id="weather-input" type="text"></label>
+    <label>메모: <input id="note-input" type="text"></label>
+    <button id="save-btn">저장</button>
+  </div>
+
+  <div id="confirm" style="display:none;">
+    <p id="confirm-msg"></p>
+    <button id="back-btn">이전으로</button>
+    <button id="done-btn">선택완료하기</button>
+  </div>
+
+  <div class="bottom">
+    <div class="nav-item"><div class="nav-circle">홈</div></div>
+    <div class="nav-item active"><div class="nav-circle">캘린더</div></div>
+    <div class="nav-item"><div class="nav-circle">일기</div></div>
+  </div>
+</div>
+
+<script src="{% static 'moozy/calendar.js' %}"></script>
+{% endblock %}

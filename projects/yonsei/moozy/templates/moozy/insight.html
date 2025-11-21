@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>인사이트 | MOOZY</title>
+
+  <link rel="stylesheet" href="{% static 'moozy/insight.css' %}">
+</head>
+<body>
+
+  <div class="phone">
+
+    <!-- 상단 상태바 -->
+    <div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+
+    <!-- 인사이트 상단 문구 -->
+    <div class="top">
+  {{ user.username|default:"○○○" }}님의 무드 인사이트를<br>
+  MOOZY가 정리했어요.
+</div>
+
+    <!-- 인사이트 본문 -->
+    <main class="insight-main">
+
+      <!-- 주간 카드 -->
+      <section class="insight-card">
+          <div class="card-bg"></div>
+          <div class="insight-inner">
+          <div class="card-header">
+            <span class="badge">주간</span>
+            <span class="card-subtext">‘피곤’를 가장 많이 느끼셨어요</span>
+          </div>
+
+          <div class="mood-row">
+  <div class="mood-slider">
+    <!-- 슬라이드 바 이미지 -->
+    <img src="{% static 'moozy/img/slider_bar.png' %}"
+         alt="슬라이드 바"
+         class="mood-track">
+
+    <!-- 왼쪽 작은 아이콘 -->
+    <img src="{% static 'moozy/img/excited.png' %}"
+         alt="작은 감정 아이콘"
+         class="mood-icon mood-icon-small">
+
+    <!-- 오른쪽 큰 아이콘 -->
+    <img src="{% static 'moozy/img/tired.png' %}"
+         alt="큰 감정 아이콘"
+         class="mood-icon mood-icon-big"
+         style="left: 75%;">  <!-- 나중에 weekly_score로 바꿀 자리 -->
+  </div>
+</div>
+        </div>
+      </section>
+
+      <!-- 월간 카드 -->
+      <section class="insight-card">
+          <div class="card-bg"></div>
+          <div class="insight-inner">
+          <div class="card-header">
+            <span class="badge">월간</span>
+            <span class="card-subtext">‘피곤’를 가장 많이 느끼셨어요</span>
+          </div>
+
+          <div class="mood-row">
+  <div class="mood-slider">
+    <!-- 슬라이드 바 이미지 -->
+    <img src="{% static 'moozy/img/slider_bar.png' %}"
+         alt="슬라이드 바"
+         class="mood-track">
+
+    <!-- 왼쪽 작은 아이콘 -->
+    <img src="{% static 'moozy/img/excited.png' %}"
+         alt="작은 감정 아이콘"
+         class="mood-icon mood-icon-small">
+
+    <!-- 오른쪽 큰 아이콘 -->
+    <img src="{% static 'moozy/img/tired.png' %}"
+         alt="큰 감정 아이콘"
+         class="mood-icon mood-icon-big"
+         style="left: 75%;">  <!-- 나중에 weekly_score로 바꿀 자리 -->
+  </div>
+</div>
+        </div>
+      </section>
+
+
+      <!-- 요약 카드 -->
+<section class="summary-card">
+  <!-- 바깥 네모(투명도 0.6) -->
+  <div class="summary-bg"></div>
+
+  <!-- 실제 내용 레이어 -->
+  <div class="summary-inner">
+    <span class="summary-badge">요약</span>
+
+    <!-- 안쪽 말풍선 네모 (완전 불투명) -->
+    <div class="summary-box">
+      <p class="summary-text">
+        {{ stats.summary|default:"피곤함을 많이 느끼셨나봐요. 달달한 걸로 기분 업해요!" }}
+      </p>
+    </div>
+  </div>
+</section>
+
+
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bottom">
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:home' %}'">홈</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:calendar' %}'">캘린더</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:insight' %}'">인사이트</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:mypage' %}'">마이페이지</div>
+    </div>
+
+  </div>
+<script>
+    // 시계 표시
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 배터리 표시
+    navigator.getBattery?.().then(function(battery) {
+      function updateBatteryLevel() {
+        const level = battery.level * 100;
+        document.getElementById('battery-fill').style.width = `${level}%`;
+      }
+      updateBatteryLevel();
+      battery.addEventListener('levelchange', updateBatteryLevel);
+    });
+  </script>
+</body>
+</html>

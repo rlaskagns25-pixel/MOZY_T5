@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마이페이지 | 인사이트</title>
+  <link rel="stylesheet" href="{% static 'moozy/mypage.css' %}">
+</head>
+<body>
+
+  <div class="phone">
+
+    <!-- 상단 상태바 -->
+    <div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+
+    <!-- 본문 영역 -->
+    <main class="mypage-main">
+      <h1 class="mypage-title">마이페이지</h1>
+
+      <p class="user-name">{{ user.username|default:"○○○" }} 님</p>
+
+      <ul class="menu-list">
+        <li class="menu-item">
+          <span class="menu-text">닉네임변경</span>
+          <span class="menu-arrow">›</span>
+        </li>
+        <li class="menu-item">
+          <span class="menu-text">개인정보보호정책</span>
+          <span class="menu-arrow">›</span>
+        </li>
+      </ul>
+    </main>
+
+    <!-- 하단 바 + 동그라미 네비 -->
+   <div class="bottom">
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:home' %}'">홈</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:calendar' %}'">캘린더</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:insight' %}'">인사이트</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:mypage' %}'">마이페이지</div>
+    </div>
+
+
+  </div>
+
+<script>
+    // 시계 표시
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 배터리 표시
+    navigator.getBattery?.().then(function(battery) {
+      function updateBatteryLevel() {
+        const level = battery.level * 100;
+        document.getElementById('battery-fill').style.width = `${level}%`;
+      }
+      updateBatteryLevel();
+      battery.addEventListener('levelchange', updateBatteryLevel);
+    });
+  </script>
+
+</body>
+</html>

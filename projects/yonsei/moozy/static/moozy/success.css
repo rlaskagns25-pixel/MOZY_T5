@@ -1,0 +1,179 @@
+/*폰 화면*/
+.phone {
+    width: 410px;
+    height: 780px;
+    overflow: hidden;
+    background: linear-gradient(#111C2C, #1C212F, #EE8F78);
+    padding: 15px 25px;
+    box-sizing: border-box;
+    position: relative;
+}
+/*위에 시간 배터리 상단바*/
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    font-size: 12px;
+    margin-bottom: 50px;
+}
+/* 시간 */
+.status-left {
+    font-weight: 500;
+}
+/*와이파이, 배터리*/
+.status-right {
+    display: flex;
+    gap: 6px;
+}
+
+/* 간단한 아이콘 모양 (대충 형태만) */
+.icon-signal {
+    width: 14px;
+    height: 8px;
+    border-radius: 2px;
+    border: 1px solid #fff;
+}
+
+.icon-wifi {
+    width: 12px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #fff;
+}
+
+.icon-battery {
+    width: 20px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1px solid #fff;
+    position: relative;
+}
+
+.icon-battery::after {
+    content: "";
+    position: absolute;
+    right: -3px;
+    top: 2px;
+    width: 2px;
+    height: 6px;
+    border-radius: 1px;
+    background: #fff;
+}
+.battery-fill {
+  display: block;        /* ✅ 반드시 보여야 함 */
+  height: 100%;          /* ✅ 배터리 높이와 맞춰야 함 */
+  background-color: white; /* ✅ 색상 있어야 눈에 보임 */
+  transition: width 0.3s ease;
+}
+
+
+/*본문*/
+.success-sub {
+    text-align: center;
+    color: #FFE1D8;
+    font-size: 18px;
+    margin-bottom: 30px;
+    margin-top: -10px;
+}
+
+.home-text-wrapper {
+    color: #FFB39B;
+}
+
+.home-title {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    color: #EE8F78;
+}
+
+.home-divider {
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    margin: 16px 0;
+}
+
+.home-date {
+    color: #fff;
+    font-size: 14px;
+}
+
+.home-status {
+    font-size: 14px;
+    color: #EE8F78;
+    margin-bottom: 70px;
+}
+
+.emotion-img {
+    object-fit: cover;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px rgba(100,0,0,0.20);
+    transition: transform 0.15s ease;
+    display: block;
+    margin: 40px auto 40px auto;
+}
+
+.home-edit-button {
+    display: block;
+    width: 80%;
+    margin: 20px auto 40px;
+    padding: 16px 0;
+    background: #EE8F78;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    font-size: 19px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.home-character img {
+    width: 250px;   /* 기존 240px → 180px */
+    height: auto;
+    filter: drop-shadow(0px 16px 20px rgba(0,0,0,0.3));
+
+}
+.note-box {
+    display: block;
+    width: 88.5%;
+    background: #FFF4F1;
+    border-radius: 30px;
+    padding: 28px 20px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #111C2C;
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+/*밑에 하단바*/
+.bottom {
+    width:100%;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-evenly;  /* 4개 evenly */
+    align-items: center;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: auto;
+    position: absolute;
+
+}
+/*하단바의 동그라미들*/
+.nav-circle {
+    width: 60px;
+    height: 60px;
+    background: #D9D9D9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 12px;
+    cursor: pointer;
+}

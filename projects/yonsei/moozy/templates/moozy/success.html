@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기록완료</title>
+  <link rel="stylesheet" href="{% static 'moozy/success.css' %}">
+</head>
+<body>
+  <div class="phone">
+
+  <div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+    <!-- 홈 상단 텍스트 -->
+    <div class="home-text-wrapper">
+        <div class="success-sub">
+          수고 많았어요 {{ user.username|default:"○○○" }}님!
+        </div>
+        <p class="home-date" id="home-date"></p>
+        <div class="home-divider"></div>
+    </div>
+
+    <!-- 캐릭터 -->
+      {% if emotion == "슬픔" %}
+          <img src="{% static 'moozy/img/sad.png' %}" class="emotion-img">
+      {% elif emotion == "기쁨" %}
+          <img src="{% static 'moozy/img/happy.png' %}" class="emotion-img">
+      {% elif emotion == "짜증" %}
+          <img src="{% static 'moozy/img/angry.png' %}" class="emotion-img">
+      {% elif emotion == "흥분" %}
+          <img src="{% static 'moozy/img/excited.png' %}" class="emotion-img">
+      {% elif emotion == "피곤" %}
+          <img src="{% static 'moozy/img/tired.png' %}" class="emotion-img">
+      {% elif emotion == "당황" %}
+          <img src="{% static 'moozy/img/surprised.png' %}" class="emotion-img">
+      {% endif %}
+      <div class="note-box">
+          {{ note }}
+      </div>
+
+    <!-- 일기쓰기 버튼 -->
+    <button class="home-edit-button" onclick="location.href='{% url 'moozy:select_emotion' %}'">일기수정</button>
+
+    <div class="bottom">
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:home' %}'">홈</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:calendar' %}'">캘린더</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:insight' %}'">인사이트</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:mypage' %}'">마이페이지</div>
+    </div>
+  </div>
+<!-- ✅ 시계 & 배터리 작동 스크립트 -->
+<script>
+  // 시계 표시
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 배터리 표시
+  navigator.getBattery?.().then(function(battery) {
+    function updateBatteryLevel() {
+      const level = battery.level * 100;
+      document.getElementById('battery-fill').style.width = `${level}%`;
+    }
+    updateBatteryLevel();
+    battery.addEventListener('levelchange', updateBatteryLevel);
+  });
+  function updateTodayDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const weekdayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const weekday = weekdayNames[now.getDay()];
+
+    const formatted = `${year}년 ${month}월 ${day}일 ${weekday}요일`;
+    document.getElementById('home-date').textContent = formatted;
+  }
+
+  updateTodayDate();
+
+</script>
+</body>
+</html>

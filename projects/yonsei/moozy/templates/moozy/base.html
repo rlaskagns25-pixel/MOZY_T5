@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'moozy/style.css' %}">
+  <title>Moozy</title>
+</head>
+<body>
+  <header> ... 네비게이션 ... </header>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<h2>{{ date|date:"Y년 m월 d일" }} 감정일기 삭제</h2>
+
+<p>정말로 아래 감정일기를 삭제하시겠어요?</p>
+<p><strong>감정:</strong> {{ entry.emotion }}</p>
+<p><strong>내용:</strong> {{ entry.note }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">삭제하기</button>
+  <a href="{% url 'moozy:diary' date=date|date:'Y-m-d' %}">취소</a>
+</form>

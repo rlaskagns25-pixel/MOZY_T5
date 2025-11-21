@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>홈</title>
+  <link rel="stylesheet" href="{% static 'moozy/home.css' %}">
+</head>
+<body>
+  <div class="phone">
+
+    <!-- ✅ 상단 상태바 -->
+    <div class="status-bar">
+      <div class="status-left" id="clock">00:00</div>
+      <div class="status-right">
+        <span class="icon-signal"></span>
+        <span class="icon-wifi"></span>
+        <span class="icon-battery">
+          <span class="battery-fill" id="battery-fill"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- ✅ 홈 상단 텍스트 -->
+    <div class="home-text-wrapper">
+      <p class="home-title">{{ user.username|default:"○○○" }}님! 오늘은 어떤 무드의<br>하루를 보내셨나요?</p>
+      <div class="home-divider"></div>
+      <p class="home-date" id="home-date"></p>
+      <p class="home-status">오늘은 아직 무드를 기록하지 않았어요.</p>
+    </div>
+
+    <!-- ✅ 캐릭터 이미지 -->
+    <div class="home-character">
+      <img src="{% static 'moozy/img/character.png' %}" alt="캐릭터" />
+    </div>
+
+    <!-- ✅ 일기쓰기 버튼 -->
+    <button class="home-write-button" onclick="location.href='{% url 'moozy:select_emotion' %}'">일기쓰기</button>
+
+    <!-- ✅ 하단 네비게이션 -->
+    <div class="bottom">
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:home' %}'">홈</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:calendar' %}'">캘린더</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:insight' %}'">인사이트</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:mypage' %}'">마이페이지</div>
+    </div>
+
+  </div>
+
+  <!-- ✅ 시계 & 배터리 작동 스크립트 -->
+  <script>
+    // 시계 표시
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 배터리 표시
+    navigator.getBattery?.().then(function(battery) {
+      function updateBatteryLevel() {
+        const level = battery.level * 100;
+        document.getElementById('battery-fill').style.width = `${level}%`;
+      }
+      updateBatteryLevel();
+      battery.addEventListener('levelchange', updateBatteryLevel);
+    });
+    function updateTodayDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const weekdayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const weekday = weekdayNames[now.getDay()];
+
+    const formatted = `${year}년 ${month}월 ${day}일 ${weekday}요일`;
+    document.getElementById('home-date').textContent = formatted;
+  }
+
+  updateTodayDate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'moozy/style.css' %}">
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Moozy — 보기</title>
+  <link rel="stylesheet" href="{% static 'moozy/style.css' %}">
+</head>
+<body class="moozy-page">
+  <header class="moozy-header">
+    <nav class="steps">
+      <button class="step done">업습러 편집된 보기</button>
+      <button class="step">날짜 선택</button>
+      <button class="step">내가 본 일기 보기</button>
+    </nav>
+  </header>
+<div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+  <main class="moozy-main">
+    <section class="hero">
+      <h1>OOO에서 날씨 나만의 뷰를 설정하세요.</h1>
+      <p class="subtitle">원하는 날짜를 선택하고 그날의 날씨/메모를 저장해보세요.</p>
+    </section>
+
+    <section class="calendar-preview">
+      <div class="calendar-box">
+        <!-- 달력 미리보기(선택 페이지로 이동) -->
+        <div class="calendar-placeholder">
+          <p class="month">October</p>
+          <div class="mini-calendar">
+            <!-- 실제 달력은 select 페이지의 calendar.js로 렌더링 -->
+            <p>달력 미리보기 영역</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="today-card">
+        <p class="date">2023년 10월 30일</p>
+        <p class="weather">오늘은 시원한 가을바람이 불어오는 날씨에요 🍃🍂</p>
+      </div>
+    </section>
+
+    <section class="actions">
+      <a href="{% url 'moozy:select' %}" class="btn primary">날짜 선택하러 가기</a>
+      <a href="{% url 'moozy:confirm' %}" class="btn secondary">내가 본 일기 보기</a>
+    </section>
+  </main>
+
+  <footer class="moozy-footer">
+    <div class="footer-buttons">
+      <a class="small-btn" href="#">로그인/이름 설정</a>
+      <a class="small-btn" href="#">언어도 무료</a>
+      <a class="small-btn" href="#">기타</a>
+    </div>
+  </footer>
+
+  <script src="{% static 'moozy/calendar.js' %}"></script>
+
+<!-- ✅ 시계 & 배터리 작동 스크립트 -->
+<script>
+  // 시계 표시
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 배터리 표시
+  navigator.getBattery?.().then(function(battery) {
+    function updateBatteryLevel() {
+      const level = battery.level * 100;
+      document.getElementById('battery-fill').style.width = `${level}%`;
+    }
+    updateBatteryLevel();
+    battery.addEventListener('levelchange', updateBatteryLevel);
+  });
+  function loadDiary(dateStr) {
+  fetch(`/calendar/get_entry/?date=${dateStr}`)
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('diary-box-container');
+      container.innerHTML = '';  // 기존 내용 초기화
+
+      const box = document.createElement('div');
+      box.className = 'diary-box';
+
+      let html = `<p class="diary-date">${data.date}</p>`;
+
+      if (data.exists) {
+        html += `
+          <p class="diary-emotion">기분: ${data.emotion}</p>
+          <p class="diary-note">${data.note}</p>
+          <form method="POST" action="/calendar/delete/${data.entry_id}/">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <button class="delete-btn">삭제</button>
+          </form>
+        `;
+      } else {
+        html += `
+          <p class="diary-empty">저장된 일기가 없습니다!</p>
+          <form method="POST" action="/calendar/delete_none/">
+            <input type="hidden" name="date" value="${dateStr}">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <button class="delete-btn">삭제</button>
+          </form>
+        `;
+      }
+
+      box.innerHTML = html;
+      container.appendChild(box);
+    });
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>감정선택</title>
+  <link rel="stylesheet" href="{% static 'moozy/select_emotion.css' %}">
+</head>
+<body>
+  <div class="phone">
+
+<div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+      <div class="emotion-back" onclick="history.back()">
+          <svg class="back-icon" viewBox="0 0 24 24">
+              <path d="M15 6 L9 12 L15 18" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+      </div>
+      <h2 class="emotion-title">{{ user.username|default:"○○○" }}님이 느낀 오늘의 감정을 골라주세요!</h2>
+      <form method="POST" id="emotionForm">
+        {% csrf_token %}
+
+        <div class="emotion-scroll">
+          <div class="emotion-grid">
+            <div class="emotion-item active">
+                <img src="{% static 'moozy/img/happy.png' %}" class="emotion-img">
+                <div class="emotion-label">기쁨</div>
+            </div>
+            <div class="emotion-item">
+                <img src="{% static 'moozy/img/sad.png' %}" class="emotion-img">
+                <div class="emotion-label">슬픔</div>
+            </div>
+            <div class="emotion-item">
+                <img src="{% static 'moozy/img/tired.png' %}" class="emotion-img">
+                <div class="emotion-label">피곤</div>
+            </div>
+            <div class="emotion-item">
+                <img src="{% static 'moozy/img/angry.png' %}" class="emotion-img">
+                <div class="emotion-label">짜증</div>
+            </div>
+            <div class="emotion-item">
+                <img src="{% static 'moozy/img/surprised.png' %}" class="emotion-img">
+                <div class="emotion-label">당황</div>
+            </div>
+            <div class="emotion-item">
+                <img src="{% static 'moozy/img/excited.png' %}" class="emotion-img">
+                <div class="emotion-label">흥분</div>
+            </div>
+          </div>
+
+          <!-- hidden input: 선택한 감정이 여기 담겨서 POST됨 -->
+          <input type="hidden" name="emotion" id="selectedEmotionInput">
+
+          <button type="submit" class="emotion-next-btn">다음</button>
+        </div>
+      </form>
+  </div>
+
+  <script>
+    let selectedEmotion = null;
+    const items = document.querySelectorAll(".emotion-item");
+    const hiddenInput = document.getElementById("selectedEmotionInput");
+
+    // ✅ 처음 로드될 때, active 되어 있는 감정으로 초기화
+    const defaultActive = document.querySelector(".emotion-item.active");
+    if (defaultActive) {
+        selectedEmotion = defaultActive.querySelector(".emotion-label").innerText;
+        hiddenInput.value = selectedEmotion;
+    }
+
+    items.forEach(item => {
+        item.addEventListener("click", () => {
+            // 모든 emotion-item에서 active 제거
+            items.forEach(i => i.classList.remove("active"));
+
+            // 클릭한 item만 active
+            item.classList.add("active");
+
+            // 선택한 감정 저장
+            selectedEmotion = item.querySelector(".emotion-label").innerText;
+
+            // hidden input에도 저장 (POST용)
+            hiddenInput.value = selectedEmotion;
+        });
+    });
+
+    document.querySelector(".emotion-next-btn").addEventListener("click", (e) => {
+        if (!selectedEmotion) {
+            e.preventDefault();
+            alert("감정을 선택해주세요!");
+        }
+    });
+  </script>
+<!-- ✅ 시계 & 배터리 작동 스크립트 -->
+<script>
+  // 시계 표시
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 배터리 표시
+  navigator.getBattery?.().then(function(battery) {
+    function updateBatteryLevel() {
+      const level = battery.level * 100;
+      document.getElementById('battery-fill').style.width = `${level}%`;
+    }
+    updateBatteryLevel();
+    battery.addEventListener('levelchange', updateBatteryLevel);
+  });
+</script>
+</body>
+</html>

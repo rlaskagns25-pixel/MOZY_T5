@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>감정 기록</title>
+</head>
+<body>
+<div class="status-bar">
+  <div class="status-left" id="clock">00:00</div>
+  <div class="status-right">
+    <span class="icon-signal"></span>
+    <span class="icon-wifi"></span>
+    <span class="icon-battery">
+      <span class="battery-fill" id="battery-fill"></span>
+    </span>
+  </div>
+</div>
+  <h2>{{ date|date:"Y년 m월 d일" }}</h2>
+
+  {% if entry %}
+    <p>날씨: {{ entry.weather }}</p>
+    <p>기분: {{ entry.note }}</p>
+    <form method="post" action="{% url 'moozy:delete_entry' date=date %}">
+      {% csrf_token %}
+      <button type="submit">삭제</button>
+    </form>
+  {% else %}
+    <p>작성된 감정 기록이 없습니다.</p>
+  {% endif %}
+<h2>{{ date|date:"Y년 m월 d일" }}의 기록</h2>
+
+{% if entry %}
+  <p>날씨: {{ entry.weather }}</p>
+  <p>내용: {{ entry.note }}</p>
+{% else %}
+  <p>기록된 일기가 없습니다.</p>
+{% endif %}
+
+<hr>
+
+{% if mood %}
+  <h3>감정 기록</h3>
+  <p>감정: {{ mood.emotion }}</p>
+  <p>기분: {{ mood.note }}</p>
+{% else %}
+  <p>감정 기록이 없습니다.</p>
+{% endif %}
+
+{% if mood %}
+  <p>감정: {{ mood.emotion }}</p>
+  <p>기분: {{ mood.note }}</p>
+  <form action="{% url 'moozy:delete_mood' date=date|date:'Y-m-d' %}" method="post">
+  {% csrf_token %}
+      <button type="submit">삭제하기</button>
+</form>
+
+{% else %}
+  <p>기록된 감정일기가 없습니다.</p>
+{% endif %}
+<!-- ✅ 시계 & 배터리 작동 스크립트 -->
+<script>
+  // 시계 표시
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 배터리 표시
+  navigator.getBattery?.().then(function(battery) {
+    function updateBatteryLevel() {
+      const level = battery.level * 100;
+      document.getElementById('battery-fill').style.width = `${level}%`;
+    }
+    updateBatteryLevel();
+    battery.addEventListener('levelchange', updateBatteryLevel);
+  });
+</script>
+</body>
+</html>

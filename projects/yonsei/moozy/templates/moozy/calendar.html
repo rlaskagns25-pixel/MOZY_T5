@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="{% static 'moozy/style.css' %}" />
+  <style>
+    /* 📌 팝업 박스 스타일 */
+    .diary-detail {
+      position: absolute;
+      bottom: 30px; /* 네비게이션 위 */
+      left: 0;
+      width: 100%;
+      display: none;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .diary-popup {
+      width: 85%;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+
+    }
+
+    .diary-popup button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="phone">
+
+    <div class="status-bar">
+      <div class="status-left" id="clock">00:00</div>
+      <div class="status-right">
+        <span class="icon-signal"></span>
+        <span class="icon-wifi"></span>
+        <span class="icon-battery">
+          <span class="battery-fill" id="battery-fill"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="top">
+      {{ user.username|default:"○○○" }}님이 남긴 나만의 무드를 <br>돌아보아요.
+    </div>
+
+    <div class="calendar-container">
+
+      <div class="calendar-header">
+        <div class="month-title">{{ current_month }}월</div>
+      </div>
+
+      <div class="calendar-weekdays">
+        <div class="week"></div>
+        <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+      </div>
+
+      <div class="calendar-days">
+        {% for week in calendar_data %}
+          <div class="week-num">{{ week.week_number }}</div>
+          {% for day in week.days %}
+            {% if day %}
+              <div class="day" data-date="{{ day|date:'Y-m-d' }}">{{ day.day }}</div>
+            {% else %}
+              <div></div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- 🟡 단 하나만 존재해야 하는 팝업 영역 -->
+    <div id="diary-detail"></div>
+
+    <div class="bottom">
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:home' %}'">홈</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:calendar' %}'">캘린더</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:insight' %}'">인사이트</div>
+      <div class="nav-circle" onclick="location.href='{% url 'moozy:mypage' %}'">마이페이지</div>
+    </div>
+
+  </div>
+
+  <!-- ============================
+       📌 JS 통합
+       ============================ -->
+  <script>
+    /* 🔵 달력 클릭 → 팝업 표시 */
+    document.querySelectorAll('.day').forEach(day => {
+      day.addEventListener('click', function() {
+        const date = this.getAttribute('data-date');
+
+        fetch(`/calendar/api/diary/${date}/`)
+          .then(response => response.json())
+          .then(data => {
+            const container = document.getElementById('diary-detail');
+            container.style.display = "flex";  // 팝업 표시
+
+            if (data.exists) {
+              container.innerHTML = `
+                <div class="diary-popup">
+                  <h3>${data.date}</h3>
+                  <p>날씨: ${data.weather}</p>
+                  <p>기분: ${data.note}</p>
+
+                  <form method="post" action="/calendar/diary/${date}/delete/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${data.csrf_token}">
+                    <button type="submit">삭제</button>
+                  </form>
+                </div>
+              `;
+            } else {
+              container.innerHTML = `
+                <div class="diary-popup">
+                  <h3>${data.date}</h3>
+                  <p>작성된 감정 기록이 없습니다.</p>
+                </div>
+              `;
+            }
+          });
+      });
+    });
+
+    /* 🔵 시계 */
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,'0');
+      const m = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* 🔵 배터리 */
+    navigator.getBattery?.().then(function(battery) {
+      function updateBatteryLevel() {
+        const level = battery.level * 100;
+        document.getElementById('battery-fill').style.width = `${level}%`;
+      }
+      updateBatteryLevel();
+      battery.addEventListener('levelchange', updateBatteryLevel);
+    });
+  </script>
+</body>
+</html>

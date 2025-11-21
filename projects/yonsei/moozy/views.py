@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_date
 from django.http import HttpResponse
 from datetime import datetime, date
@@ -6,13 +5,15 @@ import calendar
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from datetime import datetime
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from .models import MoodEntry
+from datetime import datetime
+
 
 @login_required
-def get_diary_entry(request):
-    date_str = request.GET.get('date')
-    selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+def diary_api(request, date):
+    selected_date = datetime.strptime(date, "%Y-%m-%d").date()
     entry = MoodEntry.objects.filter(user=request.user, date=selected_date).first()
 
     if entry:
@@ -21,13 +22,14 @@ def get_diary_entry(request):
             'date': selected_date.strftime("%Y년 %m월 %d일"),
             'emotion': entry.emotion,
             'note': entry.note,
-            'entry_id': entry.id,
         })
     else:
         return JsonResponse({
             'exists': False,
             'date': selected_date.strftime("%Y년 %m월 %d일"),
         })
+
+
 
 from .models import MoodEntry
 
@@ -172,6 +174,24 @@ def delete_mood_entry(request, date):
         'date': parsed_date,
         'entry': entry
     })
+
+@login_required
+def write_diary(request):
+    if request.method == 'POST':
+        date_str = request.POST.get('date')
+        note = request.POST.get('note')
+        emotion = request.POST.get('emotion')
+        weather = request.POST.get('weather')
+
+        date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+        Diary.objects.update_or_create(
+            user=request.user,
+            date=date,
+            defaults={'note': note, 'emotion': emotion, 'weather': weather}
+        )
+        return redirect('calendar')  # 작성 후 캘린더로 이동
+    return render(request, 'moozy/write_diary.html')
 
 
 

@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/diary/<date>/', views.diary_api, name='diary_api'),
     path('insight/', views.insight_view, name='insight'),
     path('mypage/', views.mypage_view, name='mypage'),
-    path('calendar/get_entry/', views.get_diary_entry, name='get_diary_entry'),
-
-    ]
+    path('calendar/write/', views.write_diary, name='write_diary'),
+    path('calendar/api/diary/<str:date>/', views.diary_api, name='diary_api'),
+    path('calendar/api/diary/<str:date>/', views.diary_api, name='diary_api'),
+]
